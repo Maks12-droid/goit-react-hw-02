@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { Component } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+import { Section } from './components/Section/Section';
+import { FeedbackOptions } from './components/FeedbackOptions/FeedbackOptions';
+import { Statistics } from './components/Statistics/Statistics';
+import { Notification } from './components/Notification/Notification';
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+export class App extends Component {
+  state = {
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  };
+
+  leaveFeedback = ({ target: { name } }) => {
+    this.setState(prevState => ({
+      [name]: prevState[name] + 1,
+    }));
+  };
+
+  countTotalFeedback = () => {
+    return Object.values(this.state).reduce((total, curr) => (total += curr));
+  };
+
+  countPositiveFeedbackPercentage = totalFeedback => {
+    const { good } = this.state;
+
+    if (totalFeedback > 0) return Math.round((good / totalFeedback) * 100);
+    return 0;
+  };
+
+  render() {
+    const { good, neutral, bad } = this.state;
+
+    const totalFeedback = this.countTotalFeedback();
+    const positivePercentage =
+      this.countPositiveFeedbackPercentage(totalFeedback);
+
+    return (
+      <>
+        <Section title="Please leave feedback">
+          <FeedbackOptions
+            options={Object.keys(this.state)}
+            leaveFeedback={this.leaveFeedback}
+          />
+        </Section>
+
+        <Section title="Statistics">
+          {totalFeedback ? (
+            <Statistics
+              good={good}
+              neutral={neutral}
+              bad={bad}
+              total={totalFeedback}
+              positivePercentage={positivePercentage}
+            />
+          ) : (
+            <Notification message="There is no feedback" />
+          )}
+        </Section>
+      </>
+    );
+  }
 }
-
-export default App
