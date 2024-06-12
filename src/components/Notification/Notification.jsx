@@ -1,11 +1,6 @@
-import PropTypes from 'prop-types';
+export default function Notification(){
 
-import { NotificationText } from './Notification.module';
-
-export const Notification = ({ message }) => (
-  <NotificationText>{message}</NotificationText>
-);
-
-Notification.propTypes = {
-  message: PropTypes.string.isRequired,
-};
+    return(
+        <p>no feeedback yet </p>
+    )
+}
